@@ -8,12 +8,13 @@ from langchain_core.messages import HumanMessage,AIMessage,SystemMessage
 from database import (
     create_table,
     load_history,
-    save_message
+    save_message,
+    list_sessions,
+    create_session
 )
 
 load_dotenv()
-create_table()
-chat_history = load_history()
+
 
 embeddings=OpenAIEmbeddings()
 
@@ -30,6 +31,30 @@ llm = ChatOllama(
     model="llama3.2"
 )
 
+create_table()
+chat_history = load_history()
+sessions = list_sessions()
+
+print("\nExisting Sessions")
+
+for session in sessions:
+    print(session[0], "-", session[1])
+
+choice = input("""
+
+1. New Session
+
+2. Continue Session 
+
+Choice:
+""")
+
+if choice == 1:
+    name = input("Session name: ")
+    session_id = create_session(name)
+elif choice == 2:
+      session_id = int(input("Session ID: "))
+chat_history = load_history(session_id)
 # chat_history = [] if using local variable for conv hist
 
 #using inbuilt model's native message format
@@ -150,6 +175,7 @@ while True:
 
 
     save_message(
+        session_id,
         "user",
         question
     )
@@ -160,6 +186,7 @@ while True:
     )
 
     save_message(
+          session_id,
     "assistant",
     response.content
     )
