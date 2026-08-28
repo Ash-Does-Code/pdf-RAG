@@ -31,10 +31,28 @@ while True:
 
     docs = retriever.invoke(question)
 
-    context = "\n\n".join([doc.page_content for doc in docs])
+    # context = "\n\n".join([doc.page_content for doc in docs])
+
+    #asking llm to citations and page numbers
+
+    context = ""
+
+    for doc in docs:
+    
+                page = doc.metadata["page"] + 1
+                context += f"""
+
+                (Page {page})
+
+                {doc.page_content}
+
+                """
 
     prompt = f"""
     Answer the question using only the context below.
+    
+    Whenever possible, mention the page number
+    where the information came from.
 
     Context:
     {context}
