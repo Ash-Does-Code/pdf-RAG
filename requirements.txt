@@ -4,4 +4,5 @@ langchain-community
 faiss-cpu
 pypdf
 python-dotenv
-pip install langchain-ollama
+langchain-ollama
+lanchain-core
