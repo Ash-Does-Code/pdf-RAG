@@ -4,12 +4,16 @@ from langchain_ollama import ChatOllama
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 
-from langchain_core.messages import 
-       HumanMessage,
-       AIMessage,
-       SystemMessage
+from langchain_core.messages import HumanMessage,AIMessage,SystemMessage
+from database import (
+    create_table,
+    load_history,
+    save_message
+)
 
 load_dotenv()
+create_table()
+chat_history = load_history()
 
 embeddings=OpenAIEmbeddings()
 
@@ -26,7 +30,7 @@ llm = ChatOllama(
     model="llama3.2"
 )
 
-chat_history = []
+# chat_history = [] if using local variable for conv hist
 
 #using inbuilt model's native message format
 system = SystemMessage(
@@ -143,10 +147,22 @@ while True:
     chat_history.append(
            HumanMessage(content=question)
     )
+
+
+    save_message(
+        "user",
+        question
+    )
+
+
     chat_history.append(
            AIMessage(content=response.content)
     )
-    chat_history = chat_history[-6:]
+
+    save_message(
+    "assistant",
+    response.content
+    )
 
 #poitn to note:
 # the context is only included in the latest HumanMessage, not in chat_history. That's intentional.
